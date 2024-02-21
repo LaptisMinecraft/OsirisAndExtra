@@ -76,10 +76,10 @@ void Triggerbot::run(UserCmd* cmd) noexcept
         // Head
         hitbox[Head] = (cfg.hitboxes & 1 << 0) == 1 << 0;
         // Chest
-        hitbox[Neck] = (cfg.hitboxes & 1 << 0) == 1 << 1;
-        hitbox[UpperChest] = (cfg.hitboxes & 1 << 1) == 1 << 1;
-        hitbox[Thorax] = (cfg.hitboxes & 1 << 1) == 1 << 1;
-        hitbox[LowerChest] = (cfg.hitboxes & 1 << 1) == 1 << 1;
+        hitbox[Hitboxes::Neck] = (cfg.hitboxes & 1 << 0) == 1 << 1;
+        hitbox[Hitboxes::UpperChest] = (cfg.hitboxes & 1 << 1) == 1 << 1;
+        hitbox[Hitboxes::Thorax] = (cfg.hitboxes & 1 << 1) == 1 << 1;
+        hitbox[Hitboxes::LowerChest] = (cfg.hitboxes & 1 << 1) == 1 << 1;
         //Stomach
         hitbox[Belly] = (cfg.hitboxes & 1 << 2) == 1 << 2;
         hitbox[Pelvis] = (cfg.hitboxes & 1 << 2) == 1 << 2;
