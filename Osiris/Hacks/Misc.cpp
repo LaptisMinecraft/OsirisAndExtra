@@ -34,6 +34,7 @@
 #include "../SDK/LocalPlayer.h"
 #include "../SDK/NetworkChannel.h"
 #include "../SDK/Panorama.h"
+#include "../SDK/PlayerResource.h"
 #include "../SDK/Prediction.h"
 #include "../SDK/Surface.h"
 #include "../SDK/UserCmd.h"
@@ -62,10 +63,12 @@ std::string currentBackKey = "";
 std::string currentRightKey = "";
 std::string currentLeftKey = "";
 int currentButtons = 0;
+Vector viewAngles{ };
 
 void Misc::gatherDataOnTick(UserCmd* cmd) noexcept
 {
     currentButtons = cmd->buttons;
+    viewAngles = cmd->viewangles;
 }
 
 void Misc::handleKeyEvent(int keynum, const char* currentBinding) noexcept
@@ -1621,6 +1624,36 @@ void Misc::recoilCrosshair() noexcept
     recoilCrosshair->setValue(config->misc.recoilCrosshair ? 1 : 0);
 }
 
+static void drawGapLine(ImDrawList* drawList, const ImVec2& pos, ImU32 color) noexcept
+{
+    // left
+    drawList->AddRectFilled(ImVec2{ pos.x - 21, pos.y - 1 }, ImVec2{ pos.x - 4, pos.y + 2 }, color & IM_COL32_A_MASK);
+    drawList->AddRectFilled(ImVec2{ pos.x - 20, pos.y }, ImVec2{ pos.x - 5, pos.y + 1 }, color);
+
+    // right
+    drawList->AddRectFilled(ImVec2{ pos.x + 5, pos.y - 1 }, ImVec2{ pos.x + 22, pos.y + 2 }, color & IM_COL32_A_MASK);
+    drawList->AddRectFilled(ImVec2{ pos.x + 6, pos.y }, ImVec2{ pos.x + 21, pos.y + 1 }, color);
+}
+
+void Misc::headshotLine(ImDrawList* drawList) noexcept
+{
+    if (!config->misc.headshotLine.enabled)
+        return;
+
+    if (!localPlayer || !localPlayer->isAlive())
+        return;
+
+    if (memory->input->isCameraInThirdPerson)
+        return;
+
+    const auto& displaySize = ImGui::GetIO().DisplaySize;
+    ImVec2 pos;
+    pos.x = displaySize.x / 2.0f;
+    pos.y = displaySize.y / 2.0f - displaySize.y / (2.0f * std::sin((config->visuals.fov + 90.0f) / 2.0f * M_PI / 180.0f) / std::sin(90.0f * M_PI / 180.0f)) * std::sin(viewAngles.x * M_PI / 180.0f) / std::sin(90.0f * M_PI / 180.0f);//I know that in mathematical theory, I can directly replace something with std::tan, but according to my test, such a calculation method causes it to deviate A LOT from the correct position sometimes, I am not major in computer science so I can only explain it in this way
+    const auto color = Helpers::calculateColor(config->misc.headshotLine);
+    drawGapLine(drawList, pos, color);
+}
+
 void Misc::watermark() noexcept
 {
     if (!config->misc.watermark.enabled)
@@ -2611,6 +2644,44 @@ void Misc::voteRevealer(GameEvent& event) noexcept
     const char color = votedYes ? '\x06' : '\x07';
 
     memory->clientMode->getHudChat()->printf(0, " \x0C\u2022Osiris\u2022 %c%s\x01 voted %c%s\x01", isLocal ? '\x01' : color, isLocal ? "You" : entity->getPlayerName().c_str(), color, votedYes ? "Yes" : "No");
+}
+
+void Misc::chatRevealer(GameEvent& event, GameEvent* events) noexcept
+{
+    if (!config->misc.chatRevealer)
+        return;
+
+    if (!localPlayer)
+        return;
+
+    const auto entity = interfaces->entityList->getEntity(interfaces->engine->getPlayerForUserID(events->getInt("userid")));
+    if (!entity)
+        return;
+
+    std::string output = "\x0C\u2022Osiris\u2022\x01 ";
+
+    auto team = entity->getTeamNumber();
+    bool isAlive = entity->isAlive();
+    bool dormant = entity->isDormant();
+    if (dormant) {
+        if (const auto pr = *memory->playerResource) 
+            isAlive = pr->getIPlayerResource()->isAlive(entity->index());
+    }
+
+    const char* text = event.getString("text");
+    const char* lastLocation = entity->lastPlaceName();
+    const std::string name = entity->getPlayerName();
+
+    if (team == localPlayer->getTeamNumber())
+        return;
+
+    if (!isAlive)
+        output += "*DEAD* ";
+
+    team == Team::TT ? output += "(Terrorist) " : output += "(Counter-Terrorist) ";
+
+    output = output + name + " @ " + lastLocation + " : " + text;
+    memory->clientMode->getHudChat()->printf(0, output.c_str());
 }
 
 // ImGui::ShadeVertsLinearColorGradientKeepAlpha() modified to do interpolation in HSV

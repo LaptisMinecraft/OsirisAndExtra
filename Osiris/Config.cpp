@@ -292,6 +292,7 @@ static void from_json(const json& j, Config::Ragebot& r)
 static void from_json(const json& j, Config::Triggerbot& t)
 {
     read(j, "Enabled", t.enabled);
+    read(j, "Magnet", t.magnet);
     read(j, "Friendly fire", t.friendlyFire);
     read(j, "Scoped only", t.scopedOnly);
     read(j, "Ignore flash", t.ignoreFlash);
@@ -435,6 +436,7 @@ static void from_json(const json& j, Config::Visuals& v)
     read(j, "No sleeves", v.noSleeves);
     read(j, "No weapons", v.noWeapons);
     read(j, "No smoke", v.noSmoke);
+    read(j, "Smoke circle", v.smokeCircle);
     read(j, "Wireframe smoke", v.wireframeSmoke);
     read(j, "No molotov", v.noMolotov);
     read(j, "Wireframe molotov", v.wireframeMolotov);
@@ -447,6 +449,7 @@ static void from_json(const json& j, Config::Visuals& v)
     read(j, "Full bright", v.fullBright);
     read(j, "Zoom", v.zoom);
     read(j, "Zoom key", v.zoomKey);
+    read(j, "Thirdperson Transparency", v.thirdpersonTransparency);
     read(j, "Thirdperson", v.thirdperson);
     read(j, "Thirdperson key", v.thirdpersonKey);
     read(j, "Thirdperson distance", v.thirdpersonDistance);
@@ -493,6 +496,9 @@ static void from_json(const json& j, Config::Visuals& v)
     read<value_t::object>(j, "Molotov timer BG", v.molotovTimerBG);
     read<value_t::object>(j, "Molotov timer TIMER", v.molotovTimerTimer);
     read<value_t::object>(j, "Molotov timer TEXT", v.molotovTimerText);
+    read<value_t::object>(j, "Console Color", v.console);
+    read<value_t::object>(j, "Smoke Color", v.smokeColor);
+    read<value_t::object>(j, "Molotov Color", v.molotovColor);
     read<value_t::object>(j, "Footstep", v.footsteps);
 }
 
@@ -712,8 +718,9 @@ static void from_json(const json& j, Config::Misc& m)
     read(j, "Fake duck key", m.fakeduckKey);
     read<value_t::object>(j, "Auto peek", m.autoPeek);
     read(j, "Auto peek key", m.autoPeekKey);
-    read(j, "Noscope crosshair", m.noscopeCrosshair);
-    read(j, "Recoil crosshair", m.recoilCrosshair);
+    read<value_t::object>(j, "Noscope crosshair", m.noscopeCrosshair);
+    read<value_t::object>(j, "Recoil crosshair", m.recoilCrosshair); 
+    read<value_t::object>(j, "Headshot line", m.headshotLine);
     read(j, "Auto pistol", m.autoPistol);
     read(j, "Auto reload", m.autoReload);
     read(j, "Auto accept", m.autoAccept);
@@ -722,6 +729,7 @@ static void from_json(const json& j, Config::Misc& m)
     read(j, "Reveal money", m.revealMoney);
     read(j, "Reveal suspect", m.revealSuspect);
     read(j, "Reveal votes", m.revealVotes);
+    read(j, "Chat revealer", m.chatRevealer);
     read<value_t::object>(j, "Spectator list", m.spectatorList);
     read<value_t::object>(j, "Keybind list", m.keybindList);
     read<value_t::object>(j, "Player list", m.playerList);
@@ -1042,6 +1050,7 @@ static void to_json(json& j, const Config::Ragebot& o, const Config::Ragebot& du
 static void to_json(json& j, const Config::Triggerbot& o, const Config::Triggerbot& dummy = {})
 {
     WRITE("Enabled", enabled);
+    WRITE("Magnet", magnet);
     WRITE("Friendly fire", friendlyFire);
     WRITE("Scoped only", scopedOnly);
     WRITE("Ignore flash", ignoreFlash);
@@ -1395,6 +1404,7 @@ static void to_json(json& j, const Config::Misc& o)
     WRITE("Auto peek key", autoPeekKey);
     WRITE("Noscope crosshair", noscopeCrosshair);
     WRITE("Recoil crosshair", recoilCrosshair);
+    WRITE("Headshot line", headshotLine);
     WRITE("Auto pistol", autoPistol);
     WRITE("Auto reload", autoReload);
     WRITE("Auto accept", autoAccept);
@@ -1403,6 +1413,7 @@ static void to_json(json& j, const Config::Misc& o)
     WRITE("Reveal money", revealMoney);
     WRITE("Reveal suspect", revealSuspect);
     WRITE("Reveal votes", revealVotes);
+    WRITE("Chat revealer", chatRevealer);
     WRITE("Spectator list", spectatorList);
     WRITE("Keybind list", keybindList);
     WRITE("Player list", playerList);
@@ -1468,6 +1479,7 @@ static void to_json(json& j, const Config::Visuals& o)
     WRITE("No sleeves", noSleeves);
     WRITE("No weapons", noWeapons);
     WRITE("No smoke", noSmoke);
+    WRITE("Smoke circle", smokeCircle);
     WRITE("Wireframe smoke", wireframeSmoke);
     WRITE("No molotov", noMolotov);
     WRITE("Wireframe molotov", wireframeMolotov);
@@ -1480,6 +1492,7 @@ static void to_json(json& j, const Config::Visuals& o)
     WRITE("Full bright", fullBright);
     WRITE("Zoom", zoom);
     WRITE("Zoom key", zoomKey);
+    WRITE("Thirdperson Transparency", thirdpersonTransparency);
     WRITE("Thirdperson", thirdperson);
     WRITE("Thirdperson key", thirdpersonKey);
     WRITE("Thirdperson distance", thirdpersonDistance);
@@ -1527,6 +1540,9 @@ static void to_json(json& j, const Config::Visuals& o)
     WRITE("Molotov timer BG", molotovTimerBG);
     WRITE("Molotov timer TIMER", molotovTimerTimer);
     WRITE("Molotov timer TEXT", molotovTimerText);
+    WRITE("Console Color", console);
+    WRITE("Smoke Color", smokeColor);
+    WRITE("Molotov Color", molotovColor);
     WRITE("Footstep", footsteps);
 }
 

@@ -622,6 +622,7 @@ void GUI::renderTriggerbotWindow() noexcept
     ImGui::PopID();
     ImGui::SameLine();
     ImGui::Checkbox("Enabled", &config->triggerbot[currentWeapon].enabled);
+    ImGui::Checkbox("Magnet", &config->triggerbot[currentWeapon].magnet);
     ImGui::Checkbox("Friendly fire", &config->triggerbot[currentWeapon].friendlyFire);
     ImGui::Checkbox("Scoped only", &config->triggerbot[currentWeapon].scopedOnly);
     ImGui::Checkbox("Ignore flash", &config->triggerbot[currentWeapon].ignoreFlash);
@@ -837,7 +838,7 @@ void GUI::renderChamsWindow() noexcept
     ImGui::Separator();
     ImGui::Checkbox("Health based", &chams.healthBased);
     ImGui::Checkbox("Blinking", &chams.blinking);
-    ImGui::Combo("Material", &chams.material, "Normal\0Flat\0Animated\0Platinum\0Glass\0Chrome\0Crystal\0Silver\0Gold\0Plastic\0Glow\0Pearlescent\0Metallic\0");
+    ImGui::Combo("Material", &chams.material, "Normal\0Flat\0Animated\0Platinum\0Glass\0Chrome\0Crystal\0Silver\0Gold\0Plastic\0Glow\0Pearlescent\0Metallic\0Smoke Light\0Smoke Dark\0Water\0Bush\0MP3 Detail\0Snowflakes\0");
     ImGui::Checkbox("Wireframe", &chams.wireframe);
     ImGui::Checkbox("Cover", &chams.cover);
     ImGui::Checkbox("Ignore-Z", &chams.ignorez);
@@ -1338,6 +1339,7 @@ void GUI::renderVisualsWindow() noexcept
     ImGui::Checkbox("No sleeves", &config->visuals.noSleeves);
     ImGui::Checkbox("No weapons", &config->visuals.noWeapons);
     ImGui::Checkbox("No smoke", &config->visuals.noSmoke);
+    ImGui::Checkbox("Smoke Circle", &config->visuals.smokeCircle);
     ImGui::SameLine();
     ImGui::Checkbox("Wireframe smoke", &config->visuals.wireframeSmoke);
     ImGui::Checkbox("No molotov", &config->visuals.noMolotov);
@@ -1420,6 +1422,9 @@ void GUI::renderVisualsWindow() noexcept
     ImGui::PushID(0);
     ImGui::SliderInt("", &config->visuals.thirdpersonDistance, 0, 1000, "Thirdperson distance: %d");
     ImGui::PopID();
+    ImGui::PushID("Thirdperson Transparency");
+    ImGui::SliderFloat("", &config->visuals.thirdpersonTransparency, 0.0f, 100.0f, "Scope Transparency: %2.f%");
+    ImGui::PopID();
     ImGui::Checkbox("Freecam", &config->visuals.freeCam);
     ImGui::SameLine();
     ImGui::PushID("Freecam Key");
@@ -1447,9 +1452,12 @@ void GUI::renderVisualsWindow() noexcept
         if (ImGui::IsItemHovered())
             ImGui::SetTooltip("skybox files must be put in csgo/materials/skybox/ ");
     }
+    ImGuiCustom::colorPicker("Console color", config->visuals.console);
     ImGuiCustom::colorPicker("World color", config->visuals.world);
     ImGuiCustom::colorPicker("Props color", config->visuals.props);
     ImGuiCustom::colorPicker("Sky color", config->visuals.sky);
+    ImGuiCustom::colorPicker("Molotov Color", config->visuals.molotovColor);
+    ImGuiCustom::colorPicker("Smoke Color", config->visuals.smokeColor);
     ImGui::PushID(13);
     ImGui::SliderInt("", &config->visuals.asusWalls, 0, 100, "Asus walls: %d");
     ImGui::PopID();
@@ -1843,8 +1851,9 @@ void GUI::renderMiscWindow() noexcept
     ImGui::PushID("Auto peek Key");
     ImGui::hotkey2("", config->misc.autoPeekKey);
     ImGui::PopID();
-    ImGui::Checkbox("Noscope crosshair", &config->misc.noscopeCrosshair);
-    ImGui::Checkbox("Recoil crosshair", &config->misc.recoilCrosshair);
+    ImGuiCustom::colorPicker("Noscope crosshair", config->misc.noscopeCrosshair);
+    ImGuiCustom::colorPicker("Recoil crosshair", config->misc.recoilCrosshair);
+    ImGuiCustom::colorPicker("Aim position line", config->misc.headshotLine);
     ImGui::Checkbox("Auto pistol", &config->misc.autoPistol);
     ImGui::Checkbox("Auto reload", &config->misc.autoReload);
     ImGui::Checkbox("Auto accept", &config->misc.autoAccept);
@@ -1853,6 +1862,7 @@ void GUI::renderMiscWindow() noexcept
     ImGui::Checkbox("Reveal money", &config->misc.revealMoney);
     ImGui::Checkbox("Reveal suspect", &config->misc.revealSuspect);
     ImGui::Checkbox("Reveal votes", &config->misc.revealVotes);
+    ImGui::Checkbox("Chat revealer", &config->misc.chatRevealer);
 
     ImGui::Checkbox("Spectator list", &config->misc.spectatorList.enabled);
     ImGui::SameLine();

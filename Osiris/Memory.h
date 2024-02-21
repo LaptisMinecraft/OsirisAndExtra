@@ -132,6 +132,8 @@ public:
     void* setupVelocityAddress;
     void* accumulateLayersAddress;
 
+    int* smokeCount;
+
     std::uintptr_t buildTransformations;
     std::uintptr_t doExtraBoneProcessing;
     std::uintptr_t standardBlendingRules;
@@ -173,6 +175,8 @@ public:
     std::uintptr_t postDataUpdate;
 
     std::uintptr_t setupBones;
+
+    std::uintptr_t particleCollection;
 
     void(__stdcall* restoreEntityToPredictedFrame)(int, int);
     void(__thiscall* markSurroundingBoundsDirty)(void*);

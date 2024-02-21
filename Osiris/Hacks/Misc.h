@@ -42,8 +42,9 @@ namespace Misc
     void updateClanTag(bool = false) noexcept;
     void showKeybinds() noexcept;
     void spectatorList() noexcept;
-    void noscopeCrosshair() noexcept;
-    void recoilCrosshair() noexcept;
+    void noscopeCrosshair(ImDrawList* drawlist) noexcept;
+    void recoilCrosshair(ImDrawList* drawList) noexcept;
+    void headshotLine(ImDrawList* drawList) noexcept;
     void watermark() noexcept;
     void prepareRevolver(UserCmd*) noexcept;
     void fastPlant(UserCmd*) noexcept;
@@ -76,6 +77,7 @@ namespace Misc
     void resetReportbot() noexcept;
     void preserveKillfeed(bool roundStart = false) noexcept;
     void voteRevealer(GameEvent& event) noexcept;
+    void chatRevealer(GameEvent& event, GameEvent* events) noexcept;
     void drawOffscreenEnemies(ImDrawList* drawList) noexcept;
     void autoAccept(const char* soundEntry) noexcept;
 
